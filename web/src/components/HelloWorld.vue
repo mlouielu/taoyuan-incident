@@ -27,7 +27,7 @@
 	<b-row>
 	  <b-col>
 		<b-card border-variant="danger" header-bg-variant="danger" header-text-variant="white" header="總事故件數" align="center">
-		  {{ incidents.length }} 件
+		  {{ total_incidents }} 件
 		</b-card>
 	  </b-col>
 	</b-row>
@@ -74,6 +74,7 @@ export default {
     return {
 	  moment: extendMoment(moment),
 	  incidents: [],
+	  total_incidents: 0,
 	  mapupdater: null,
 
 	  infoContent: '',
@@ -140,7 +141,8 @@ export default {
 		  }
 		})
 	  	.then((response) => {
-		  this.incidents = response.data
+		  this.incidents = response.data.data
+		  this.total_incidents = response.data.total
 		})
 	}
   },

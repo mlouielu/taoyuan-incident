@@ -44,7 +44,12 @@ def incidents_by_bounds(lat1, lng1, lat2, lng2):
                 continue
             q = q.filter(getattr(Incident, k).in_(v))
     q = q.all()
-    return jsonify([i._asdict() for i in q])
+    return jsonify(
+        {
+            'data': [i._asdict() for i in q[:8000]],
+            'total': len(q)
+        }
+    )
 
 
 def setup_app():
