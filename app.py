@@ -47,6 +47,15 @@ def incidents_by_bounds(lat1, lng1, lat2, lng2):
     return jsonify([i._asdict() for i in q])
 
 
+def setup_app():
+    load_incident_data()
+    model.connect_to_db(app)
+    model.db.create_all()
+
+
+setup_app()
+
+
 if __name__ == '__main__':
     load_incident_data()
     model.connect_to_db(app)
