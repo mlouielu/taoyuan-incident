@@ -45,7 +45,7 @@ def incidents_by_bounds(lat1, lng1, lat2, lng2):
             q = q.filter(getattr(Incident, k).in_(v))
 
     total = q.count()
-    q = q.limit(1000).all()
+    q = q.order_by(func.random()).limit(1000).all()
     return jsonify(
         {
             'data': [i._asdict() for i in q],
