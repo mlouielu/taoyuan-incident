@@ -1,34 +1,12 @@
-台7乙肇事統計地圖
-================
+桃園市交通事故互動地圖
+======================
 
 ![](banner/banner.png)
 
 
-data source: [警政署歷史交通事故資料](https://www.npa.gov.tw/NPAGip/wSite/lp?ctNode=12854&CtUnit=2633&BaseDSD=7&mp=3)
+data source: [桃園市交通事故資料集](https://data.tycg.gov.tw/opendata/datalist/search?page=0&organize=380130000C&group=&format=&tag=&oldText=&allText=%E6%A1%83%E5%9C%92%E5%B8%82%E4%BA%A4%E9%80%9A%E4%BA%8B%E6%95%85%E8%B3%87%E6%96%99%E8%A1%A8&sort=&sord=score&sdir=desc)
 
-統計年份: 2014 ~ 2017
-
-
-
-File Structure
-==============
-
-* `data.csv`: 所有 2014 ~ 2017 的台 7 乙事故資料 (A1, A2)
-* `main.py`: 將所有事故資料轉換成 kml
-* `t7b_mileage_sign.csv`: 台 7 乙所有里程樁
-* `t7b_incident.kml`: 轉換後的 kml 檔
-
-
-How To Use
-==========
-
-```
-$ python main.py
-$ ls
-... t7b_incident.kml ...
-```
-
-將 t7b_incident.kml 上傳至 google mymaps 觀看
+統計年份: 2017 ~ 2018
 
 
 Web
