@@ -33,11 +33,6 @@ def filters():
     return jsonify(ALL_FILTERS)
 
 
-@app.route('/incidents')
-def incidents():
-    return jsonify({'data': DATA})
-
-
 @app.route('/incidents/<float:lat1>/<float:lng1>/<float:lat2>/<float:lng2>',
            methods=['GET', 'POST'])
 def incidents_by_bounds(lat1, lng1, lat2, lng2):
