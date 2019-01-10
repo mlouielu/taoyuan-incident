@@ -1,65 +1,36 @@
 # -*- coding: utf-8 -*-
-import csv
-import datetime
-import re
-
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_compress import Compress
+from sqlalchemy import func
+
 
 import main
+import model
+from model import Incident
 
 
-LOCATION_REGEX = r"(\d+.\d+(?=K)|\d+(?=K)|\d+.\d+(?=公里)|\d+(?=公里))"
 DATA = []
-
+ALL_FILTERS = {}
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
-CORS(app)
-
-
-def get_incident_metadata(r, location, lat, lng):
-    date, time = r[0].split()
-    date = date.replace('年', '-').replace('月', '-').replace('日', '')
-    dead = int(r[2][2:])
-    injury = int(r[3][2:])
-    contributing = list(filter(lambda x: x, r[4:]))
-    involve_normal_motorcycle = len(list(filter(
-        lambda x: x.startswith('普通重型-機車'), contributing))) > 0
-    involve_big_motorcycle = len(list(filter(
-        lambda x: x.startswith('大型重型'), contributing))) > 0
-    involve_light_motorcycle = len(list(filter(
-        lambda x: x.startswith('普通輕型-機車'), contributing))) > 0
-    involve_car = len(list(filter(
-        lambda x: x.startswith('自用-小客車'), contributing))) > 0
-    return {
-        'description': '\n'.join(r).strip(),
-        'date': date,
-        'weekend': datetime.datetime.strptime(date, '%Y-%m-%d').weekday() > 4,
-        'time': time,
-        'minutes': int(time.split(':')[0]) * 60 + int(time.split(':')[1]),
-        'dead': dead,
-        'injuries': injury,
-        'contributing': contributing,
-        'involve_big_motorcycle': involve_big_motorcycle,
-        'involve_normal_motorcycle': involve_normal_motorcycle,
-        'involve_light_motorcycle': involve_light_motorcycle,
-        'involve_car': involve_car,
-        'location': location,
-        'position': {'lat': lat, 'lng': lng}
-    }
+Compress(app)
+CORS(app, resources={r'/*': {'origins': '*'}})
 
 
 def load_incident_data():
-    reader = csv.reader(open('data.csv'))
-    for r in reader:
-        location_re = re.search(LOCATION_REGEX, r[1])
-        if location_re:
-            location = float(location_re.group())
-            lat, lng = main.get_random_gps_nearby(
-                *main.get_gps_points(location), 10)
-            metadata = get_incident_metadata(r, location, lat, lng)
-            DATA.append(metadata)
+    global DATA, ALL_FILTERS
+    data = ['traffic106_c.csv', 'traffic107_c.csv']
+    DATA = []
+    for d in data:
+        DATA.extend(main.read_csv(d))
+    ALL_FILTERS = main.get_all_category_with_id(DATA)
+
+
+@app.route('/filters')
+def filters():
+    return jsonify(ALL_FILTERS)
 
 
 @app.route('/incidents')
@@ -67,11 +38,23 @@ def incidents():
     return jsonify({'data': DATA})
 
 
-main.init_mileage_sign()
-load_incident_data()
+@app.route('/incidents/<float:lat1>/<float:lng1>/<float:lat2>/<float:lng2>',
+           methods=['GET', 'POST'])
+def incidents_by_bounds(lat1, lng1, lat2, lng2):
+    q = Incident.query.filter(
+        Incident.geo.intersects(func.ST_MakeEnvelope(lng1, lat1, lng2, lat2, 4326)))
+    if request.method == 'POST':
+        for k, v in request.get_json().items():
+            if not v:
+                continue
+            q = q.filter(getattr(Incident, k).in_(v))
+    q = q.all()
+    return jsonify([i._asdict() for i in q])
 
 
 if __name__ == '__main__':
-    main.init_mileage_sign()
     load_incident_data()
+    model.connect_to_db(app)
+    model.db.create_all()
+    #Incident.add_incidents(DATA)
     app.run(debug=True)

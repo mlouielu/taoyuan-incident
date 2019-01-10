@@ -2,11 +2,9 @@
   <footer class="main-footer">
     <div class="main-footer-container">
       <div class="main-footer-content">
-        <a href="/">台7乙交通事故互動地圖</a>
-		<a href="https://goo.gl/yZdQLR">原始資料來源</a>
-		<a href="https://goo.gl/AdzPpp~">GitHub</a>
-		<a href="https://goo.gl/zz3Kv1">Google Maps</a>
-		<a href="https://goo.gl/2J7PWA">事故資料</a>
+        <a href="/">桃園市交通事故互動地圖</a>
+		<a href="https://goo.gl/Q5NnQ7">原始資料來源</a>
+		<a href="https://goo.gl/YFSZnu">GitHub</a>
       </div>
 	  <div class="main-footer-content" style="width:150px;font-size:12px;padding-left:20px;margin-right:30px">
 		<a rel="license" href="http://creativecommons.org/licenses/by/3.0/tw/"><img alt="創用 CC 授權條款" style="border-width:0" src="https://i.creativecommons.org/l/by/3.0/tw/88x31.png" /></a><br>

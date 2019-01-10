@@ -10,6 +10,7 @@ import VueAxios from 'vue-axios'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import GmapCluster from 'vue2-google-maps/dist/components/cluster'
 
 Vue.config.productionTip = false
 
@@ -18,10 +19,11 @@ Vue.use(BootstrapVue)
 Vue.use(VueAxios, axios)
 Vue.use(VueGoogleMaps, {
     load: {
-        key: 'AIzaSyBuAx7uRc277YuKbcXIYYFZe38rIYI5Ooo',
+        key: 'AIzaSyA6DV52Q1b2ik1DK9TBSbjyeGNb2DCEdX4',
         libraries: 'places'
     },
 })
+Vue.component('GmapCluster', GmapCluster)
 
 /* eslint-disable no-new */
 new Vue({
