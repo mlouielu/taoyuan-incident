@@ -131,7 +131,7 @@ export default {
 	  var lat2 = this.bounds.ma.l
 	  var lng1 = this.bounds.fa.j
 	  var lng2 = this.bounds.fa.l
-	  var url = `http://localhost:5000/incidents/${lat1}/${lng1}/${lat2}/${lng2}`
+	  var url = `https://taoyuan.freeway.pw/api/incidents/${lat1}/${lng1}/${lat2}/${lng2}`
 
 	  var self = this
 	  this.axios
@@ -152,7 +152,7 @@ export default {
 	  self.bounds = bound
 	})
 
-	this.axios.get('http://localhost:5000/filters')
+	this.axios.get('https://taoyuan.freeway.pw/api/filters')
 	  .then((response) => {
 		self.filterTypesOptions = response.data
 		for (var key in self.filterTypesOptions) {
