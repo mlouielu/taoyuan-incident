@@ -18,6 +18,7 @@
           :position="{lat: m.GPS緯度, lng: m.GPS經度}"
           :clickable="true"
           :draggable="true"
+		  :icon="getMarkerIconUrl(m)"
           @click="center=m.position;toggleInfoWindow(m,index)"
 		  />
 	  </GmapCluster>
@@ -29,6 +30,14 @@
 		<b-card border-variant="danger" header-bg-variant="danger" header-text-variant="white" header="總事故件數" align="center">
 		  {{ total_incidents }} 件
 		</b-card>
+	  </b-col>
+	</b-row>
+	<b-row>
+	  <b-col>
+		<highcharts :options="vehicleTypesChartOption"></highcharts>
+	  </b-col>
+	  <b-col>
+		<highcharts :options="contributingFactorsChartOption"></highcharts>
 	  </b-col>
 	</b-row>
 	<b-row>
@@ -74,6 +83,7 @@ export default {
     return {
 	  moment: extendMoment(moment),
 	  incidents: [],
+	  reasons: [],
 	  total_incidents: 0,
 	  mapupdater: null,
 
@@ -94,12 +104,32 @@ export default {
 
 	  // Filter Options
 	  filterTypes: {},
-	  filterTypesOptions: {}
+	  filterTypesOptions: {},
+
+	  // Chart Options
+	  vehicleTypesChartOption: {title:{text:'第一當事者車輛類別'}},
+	  contributingFactorsChartOption: {title:{text:'主要肇事因子'}}
     }
   },
   watch: {
   },
   methods: {
+	getMarkerIconUrl: function(marker) {
+	  switch (marker.乘坐車輛的當事者區分_大類別代碼_車種) {
+	  case 'C0':
+		return 'https://maps.gstatic.com/mapfiles/ms2/micons/motorcycling.png'
+	  case 'B0':
+	  case 'B1':
+		return 'https://maps.gstatic.com/mapfiles/ms2/micons/cabs.png'
+	  case 'A0':
+		return 'https://maps.gstatic.com/mapfiles/ms2/micons/bus.png'
+	  case 'A1':
+		return 'https://maps.gstatic.com/mapfiles/ms2/micons/truck.png'
+	  case 'H0':
+		return 'https://maps.gstatic.com/mapfiles/ms2/micons/woman.png'
+	  }
+	  return 'https://maps.gstatic.com/mapfiles/ms2/micons/blue-dot.png'
+	},
 	toggleInfoWindow: function(marker, idx) {
 	  console.log(marker.乘坐車輛的當事者區分_子類別代碼_車種)
 	  this.infoWindowPos = {lat: marker.GPS緯度, lng: marker.GPS經度}
@@ -142,7 +172,31 @@ export default {
 		})
 	  	.then((response) => {
 		  this.incidents = response.data.data
+		  this.reasons = response.data.reasons
 		  this.total_incidents = response.data.total
+
+		  this.vehicleTypesChartOption = {
+			chart: {
+			  type: 'pie'
+			},
+			title: {
+			  text: '第一當事者車輛類別'
+			},
+			series: [{
+			  data: this.reasons['乘坐車輛的當事者區分_子類別名稱_車種']
+			}]
+		  }
+		  this.contributingFactorsChartOption = {
+			chart: {
+			  type: 'pie',
+			},
+			title: {
+			  text: '主要肇事因子'
+			},
+			series: [{
+			  data: this.reasons['肇因研判子類別名稱_主要']
+			}]
+		  }
 		})
 	}
   },
