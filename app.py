@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_compress import Compress
@@ -46,9 +48,25 @@ def incidents_by_bounds(lat1, lng1, lat2, lng2):
 
     total = q.count()
     q = q.order_by(func.random()).limit(1000).all()
+
+    reasons = defaultdict(list)
+    reasonsdd = defaultdict(lambda: defaultdict(int))
+    for i in q:
+        name = ALL_FILTERS['乘坐車輛的當事者區分_子類別代碼_車種'][
+            i.乘坐車輛的當事者區分_子類別代碼_車種]
+        reasonsdd['乘坐車輛的當事者區分_子類別名稱_車種'][name] += 1
+        name = ALL_FILTERS['肇因研判子類別代碼_主要'][
+            i.肇因研判子類別代碼_主要]
+        reasonsdd['肇因研判子類別名稱_主要'][name] += 1
+    for reason in reasonsdd:
+        for k, v in reasonsdd[reason].items():
+            reasons[reason].append([k, v])
+        reasons[reason].sort(key=lambda x: x[1], reverse=True)
+
     return jsonify(
         {
             'data': [i._asdict() for i in q],
+            'reasons': reasons,
             'total': total
         }
     )
