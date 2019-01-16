@@ -160,8 +160,8 @@ export default {
 	updateIncidentByBounds: function() {
 	  var lat1 = this.bounds.ma.j
 	  var lat2 = this.bounds.ma.l
-	  var lng1 = this.bounds.fa.j
-	  var lng2 = this.bounds.fa.l
+	  var lng1 = this.bounds.ga.j
+	  var lng2 = this.bounds.ga.l
 	  var url = `https://taoyuan.freeway.pw/api/incidents/${lat1}/${lng1}/${lat2}/${lng2}`
 
 	  var self = this
